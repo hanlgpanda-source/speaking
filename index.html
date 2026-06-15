@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthy Living for Teens - Speaking Practice</title>
+    <style>
+        :root {
+            --primary-color: #2e7d32;
+            --secondary-color: #4caf50;
+            --background-color: #f1f8e9;
+            --text-color: #333;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 650px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .scene-image-container {
+            width: 100%;
+            height: 250px;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #e0e0e0;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .scene-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+        .character-box {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--primary-color);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 8px 8px 0;
+            text-align: left;
+        }
+
+        .character-name {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .dialogue-text {
+            font-size: 18px;
+            color: #111;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        .instruction {
+            font-size: 14px;
+            color: #ef6c00;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 80%;
+        }
+
+        .btn-speak {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+        }
+
+        .btn-speak:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-speak:disabled {
+            background-color: #cccccc;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .btn-reset {
+            background-color: #757575;
+            color: white;
+            font-size: 14px;
+            padding: 8px 16px;
+            width: auto;
+        }
+
+        .btn-reset:hover {
+            background-color: #616161;
+        }
+
+        .status-box {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .recognized-text {
+            font-weight: bold;
+            color: #d32f2f;
+            margin-top: 5px;
+            word-break: break-word;
+        }
+
+        .success-text {
+            color: #388e3c;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎙️ Teen Healthy Living Guide</h1>
+    <div class="subtitle">Luyện nói tiếng Anh tương tác rẽ nhánh - Unit 3 Global Success [cite: 1]</div>
+
+    <div class="scene-image-container">
+        <img id="sceneImage" src="images/default_scene.jpg" alt="Scene Image" class="scene-image">
+    </div>
+
+    <div class="character-box">
+        <div id="characterName" class="character-name">Nam (Friend) [cite: 46]</div>
+        <div id="dialogueText" class="dialogue-text">Hi Lan, how are you? You look a little tired today. [cite: 46]</div>
+    </div>
+
+    <div class="instruction">🔊 Nhấn nút dưới rồi đọc TO câu gợi ý bằng tiếng Anh:</div>
+
+    <div class="controls">
+        <button id="btnSpeak" class="btn-speak">🎙️ Bắt đầu nói (Chạm để nói)</button>
+        <button id="btnReset" class="btn-reset">Chơi lại từ đầu</button>
+    </div>
+
+    <div class="status-box">
+        <div id="statusMessage">Sẵn sàng. Hãy cấp quyền truy cập Micro khi được hỏi.</div>
+        <div id="resultArea" style="display:none;">
+            Hệ thống nghe được: <span id="recognizedText" class="recognized-text">...</span>
+            <div id="feedbackMessage"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Kịch bản 7 cảnh tương tác dựa hoàn toàn trên từ vựng, ngữ pháp bài học [cite: 1, 3, 6]
+    // Đường dẫn ảnh đã được cấu trúc lại thành thư mục offline "images/" để tránh lỗi hiển thị
+    const scenes = {
+        1: {
+            character: "Lan (Tired Teenager) [cite: 47]",
+            dialogue: "I have some stress because I have many exams next week. [cite: 47]",
+            hintKeywords: ["stress", "exams", "next week"], // Từ khóa kiểm tra [cite: 47]
+            image: "images/scene1_stress.jpg"
+        },
+        2: {
+            character: "Lan (Anxious Teenager) [cite: 48]",
+            dialogue: "Sometimes I feel anxiety, so I can't concentrate on my study. [cite: 48]",
+            hintKeywords: ["anxiety", "concentrate", "study"], // Từ khóa kiểm tra [cite: 48]
+            image: "images/scene2_anxiety.jpg"
+        },
+        3: {
+            character: "Nam (Giving Advice) [cite: 49]",
+            dialogue: "I think you should have a healthy lifestyle to maintain your health. [cite: 49, 51]",
+            hintKeywords: ["should", "healthy lifestyle", "maintain"], // Từ khóa kiểm tra [cite: 49, 51]
+            image: "images/scene3_lifestyle.jpg"
+        },
+        4: {
+            character: "Nam (Diet Expert) [cite: 52, 53]",
+            dialogue: "First, you should have a balanced diet and you shouldn't eat fast food. [cite: 52, 53]",
+            hintKeywords: ["balanced diet", "shouldn't", "fast food"], // Từ khóa kiểm tra [cite: 52, 53]
+            image: "images/scene4_diet.jpg"
+        },
+        5: {
+            character: "Nam (Fitness Coach) [cite: 58, 60]",
+            dialogue: "If you do exercise regularly, you will feel much better. [cite: 58, 60]",
+            hintKeywords: ["exercise", "regularly", "will", "better"], // Từ khóa kiểm tra [cite: 60]
+            image: "images/scene5_exercise.jpg"
+        },
+        6: {
+            character: "Lan (Eco-friendly Citizen) [cite: 61, 62]",
+            dialogue: "If people use public transport more often, the city will become cleaner. [cite: 61, 62]",
+            hintKeywords: ["public transport", "city", "cleaner"], // Từ khóa kiểm tra [cite: 62]
+            image: "images/scene6_transport.jpg"
+        },
+        7: {
+            character: "System (Success) [cite: 63]",
+            dialogue: "Congratulations! You have learned many ways to live a healthier life. [cite: 63]",
+            hintKeywords: ["congratulations", "learned", "healthier life"],
+            image: "images/scene7_success.jpg",
+            isEnd: true
+        }
+    };
+
+    let currentScene = 1;
+
+    // Khởi tạo các thành phần DOM
+    const sceneImage = document.getElementById('sceneImage');
+    const characterName = document.getElementById('characterName');
+    const dialogueText = document.getElementById('dialogueText');
+    const btnSpeak = document.getElementById('btnSpeak');
+    const btnReset = document.getElementById('btnReset');
+    const statusMessage = document.getElementById('statusMessage');
+    const resultArea = document.getElementById('resultArea');
+    const recognizedText = document.getElementById('recognizedText');
+    const feedbackMessage = document.getElementById('feedbackMessage');
+
+    // Cấu hình API nhận diện giọng nói (Web Speech API)
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+
+    if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US'; 
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+            statusMessage.innerHTML = "🎚️ Hệ thống đang lắng nghe... Hãy nói thật TO và RÕ câu thoại!";
+            btnSpeak.disabled = true;
+        };
+
+        recognition.onresult = (event) => {
+            btnSpeak.disabled = false;
+            const speechResult = event.results[0][0].transcript.toLowerCase();
+            
+            resultArea.style.display = 'block';
+            recognizedText.innerHTML = `"${event.results[0][0].transcript}"`;
+
+            // Thuật toán kiểm tra từ khóa cốt lõi để tính điểm đạt
+            const currentKeywords = scenes[currentScene].hintKeywords;
+            const isCorrect = currentKeywords.every(keyword => speechResult.includes(keyword.toLowerCase()));
+
+            if (isCorrect) {
+                feedbackMessage.innerHTML = "<div class='success-text'>🎉 Tuyệt vời! Bạn phát âm từ khóa rất chuẩn. Đang chuyển cảnh...</div>";
+                setTimeout(() => {
+                    nextScene();
+                }, 2500);
+            } else {
+                feedbackMessage.innerHTML = "<div style='color:#ef6c00; font-weight:bold; margin-top:5px;'>❌ Chưa chính xác! Gợi ý: Hãy đọc rõ các từ khóa ngữ pháp/từ vựng chính.</div>";
+            }
+        };
+
+        recognition.onerror = (event) => {
+            btnSpeak.disabled = false;
+            statusMessage.innerHTML = "⚠️ Lỗi: " + event.error + ". Vui lòng kiểm tra lại thiết bị thu âm.";
+        };
+
+        recognition.onend = () => {
+            btnSpeak.disabled = false;
+            if(statusMessage.innerHTML.includes("lắng nghe")) {
+                statusMessage.innerHTML = "Đã dừng nghe.";
+            }
+        };
+
+    } else {
+        statusMessage.innerHTML = "⚠️ Trình duyệt không hỗ trợ Nhận Diện Giọng Nói. Vui lòng chuyển sang dùng Google Chrome!";
+        btnSpeak.disabled = true;
+    }
+
+    // Hành động kích hoạt micro
+    btnSpeak.addEventListener('click', () => {
+        if (recognition) {
+            resultArea.style.display = 'none';
+            recognition.start();
+        }
+    });
+
+    // Hàm điều khiển logic chuyển tiếp cảnh kế tiếp
+    function nextScene() {
+        if (scenes[currentScene].isEnd) {
+            statusMessage.innerHTML = "🏆 Chúc mừng học sinh đã hoàn thành xuất sắc toàn bộ bài học speaking ngày hôm nay!";
+            btnSpeak.disabled = true;
+            return;
+        }
+
+        currentScene++;
+        const data = scenes[currentScene];
+
+        // Cập nhật DOM cục bộ
+        sceneImage.src = data.image;
+        characterName.innerHTML = data.character;
+        dialogueText.innerHTML = data.dialogue;
+        
+        resultArea.style.display = 'none';
+        statusMessage.innerHTML = `Đã chuyển sang Cảnh ${currentScene}. Nhấn nút để tiếp tục nói.`;
+
+        if (data.isEnd) {
+            btnSpeak.style.display = 'none';
+            statusMessage.innerHTML = "🏆 Hoàn thành bài học!";
+        }
+    }
+
+    // Hành động Reset từ đầu kịch bản bài học [cite: 46]
+    btnReset.addEventListener('click', () => {
+        currentScene = 1;
+        sceneImage.src = "images/default_scene.jpg";
+        characterName.innerHTML = "Nam (Friend) [cite: 46]";
+        dialogueText.innerHTML = "Hi Lan, how are you? You look a little tired today. [cite: 46]";
+        btnSpeak.style.display = 'block';
+        btnSpeak.disabled = false;
+        resultArea.style.display = 'none';
+        statusMessage.innerHTML = "Hệ thống đã làm mới bài học. Học sinh có thể bắt đầu lại từ đầu.";
+    });
+</script>
+
+</body>
+</html>
